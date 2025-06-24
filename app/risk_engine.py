@@ -262,7 +262,6 @@ class RiskScoreEngine:
 if __name__ == "__main__":
     # 테스트용 코드
     from app.data_collector import DataCollector
-    
     collector = DataCollector()
     data = collector.get_all_data()
     

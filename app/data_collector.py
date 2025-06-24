@@ -107,6 +107,7 @@ class DataCollector:
 
         logger.info(f"{name}: 데이터 다운로드 및 캐시 저장 완료")
         return data
+
     
     def get_price_data(self) -> pd.DataFrame:
         """실시간 가격 데이터 수집"""
