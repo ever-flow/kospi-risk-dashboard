@@ -161,6 +161,7 @@ for i in range(corr_window, len(data), step):
 
 환경변수 `RISK_PARAMS`에 JSON 형식으로 값을 지정하거나 클래스 초기화 시 파라미터 사전을 전달하여 쉽게 수정할 수 있습니다.
 
+
 ### 4. 리스크 스코어 계산
 
 #### 원시 스코어 계산
