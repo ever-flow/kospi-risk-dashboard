@@ -38,7 +38,7 @@ pip install -r requirements.txt
 ### 2. 대시보드 실행
 
 ```bash
-streamlit run dashboard.py
+streamlit run app/dashboard.py
 ```
 
 브라우저에서 `http://localhost:8501`로 접속하세요.
@@ -47,30 +47,32 @@ streamlit run dashboard.py
 
 ```
 kospi-risk-dashboard/
-├── dashboard.py          # 메인 Streamlit 대시보드
-├── data_collector.py     # 데이터 수집 모듈
-├── risk_engine.py        # 리스크 스코어 계산 엔진
+├── app/
+│   ├── dashboard.py      # 메인 Streamlit 대시보드
+│   ├── data_collector.py # 데이터 수집 모듈
+│   ├── risk_engine.py    # 리스크 스코어 계산 엔진
+│   └── __init__.py       # 패키지 초기화
 ├── requirements.txt      # Python 의존성
-├── README.md            # 프로젝트 문서
-├── .gitignore          # Git 무시 파일
-└── docs/               # 추가 문서
+├── README.md             # 프로젝트 문서
+├── .gitignore            # Git 무시 파일
+└── docs/                 # 추가 문서
     ├── user_guide.md   # 사용자 가이드
     └── technical.md    # 기술 문서
 ```
 
 ## 🔧 주요 모듈
 
-### `dashboard.py`
+### `app/dashboard.py`
 - Streamlit 기반 웹 대시보드
 - 인터랙티브 차트 및 사용자 인터페이스
 - 실시간 데이터 업데이트
 
-### `data_collector.py`
+### `app/data_collector.py`
 - Yahoo Finance API 연동
 - KRX 데이터 수집
 - 캐시 시스템으로 효율적 데이터 관리
 
-### `risk_engine.py`
+### `app/risk_engine.py`
 - 22개 기술적 지표 계산
 - 머신러닝 기반 동적 가중치 계산
 - 리스크 스코어 정규화 및 스무딩
@@ -119,10 +121,36 @@ kospi-risk-dashboard/
 
 ### 캐시 설정
 데이터는 1시간마다 자동 갱신되며, 수동으로 강제 업데이트할 수 있습니다.
+네트워크 오류로 새 데이터를 받지 못한 경우에는 기존 캐시가 자동으로 사용됩니다.
 
 ### API 설정
 - Yahoo Finance: 무료 API 사용
 - KRX: pykrx 라이브러리 사용
+
+### 하이퍼파라미터 조정
+리스크 스코어 계산에 사용되는 하이퍼파라미터는 다음과 같이 최적화된
+기본값으로 설정되어 있습니다.
+
+```python
+{
+    "roll": 126,
+    "corr": 504,
+    "step": 3,
+    "model": "elastic",
+    "alpha": 1.0,
+    "future_days": 126,
+    "smooth": 20,
+}
+```
+
+필요 시 `RISK_PARAMS` 환경변수에 JSON 형식으로 값을 전달하거나
+`RiskScoreEngine` 초기화 시 파라미터 사전을 전달하여 조정할 수 있습니다.
+
+예시:
+
+```bash
+export RISK_PARAMS='{"roll":252,"model":"ridge"}'
+```
 
 ## 🔍 기술적 세부사항
 
@@ -149,7 +177,7 @@ kospi-risk-dashboard/
 ### Heroku
 ```bash
 # Procfile 생성
-echo "web: streamlit run dashboard.py --server.port=\$PORT --server.address=0.0.0.0" > Procfile
+echo "web: streamlit run app/dashboard.py --server.port=\$PORT --server.address=0.0.0.0" > Procfile
 
 # Heroku 배포
 heroku create your-app-name
@@ -168,7 +196,7 @@ COPY . .
 
 EXPOSE 8501
 
-CMD ["streamlit", "run", "dashboard.py", "--server.port=8501", "--server.address=0.0.0.0"]
+CMD ["streamlit", "run", "app/dashboard.py", "--server.port=8501", "--server.address=0.0.0.0"]
 ```
 
 ## ⚠️ 주의사항
