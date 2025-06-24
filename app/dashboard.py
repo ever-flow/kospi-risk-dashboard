@@ -1,6 +1,13 @@
-"""
-코스피 리스크 스코어 대시보드 (최종 수정 버전)
-"""
+"""코스피 리스크 스코어 대시보드 (최종 수정 버전)"""
+
+import os
+import sys
+
+# ensure the package is importable when executed directly
+ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if ROOT_DIR not in sys.path:
+    sys.path.insert(0, ROOT_DIR)
+
 
 import streamlit as st
 import pandas as pd
