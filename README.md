@@ -128,10 +128,24 @@ kospi-risk-dashboard/
 - KRX: pykrx 라이브러리 사용
 
 ### 하이퍼파라미터 조정
-리스크 스코어 계산에 사용되는 하이퍼파라미터는 최적화된 기본값으로
-설정되어 있습니다. 필요 시 `RISK_PARAMS` 환경변수에 JSON 형식으로
-값을 전달하거나 `RiskScoreEngine` 초기화 시 파라미터 사전을 전달하여
-조정할 수 있습니다.
+리스크 스코어 계산에 사용되는 하이퍼파라미터는 다음과 같이 최적화된
+기본값으로 설정되어 있습니다.
+
+```python
+{
+    "roll": 126,
+    "corr": 504,
+    "step": 3,
+    "model": "elastic",
+    "alpha": 1.0,
+    "future_days": 126,
+    "smooth": 20,
+}
+```
+
+필요 시 `RISK_PARAMS` 환경변수에 JSON 형식으로 값을 전달하거나
+`RiskScoreEngine` 초기화 시 파라미터 사전을 전달하여 조정할 수 있습니다.
+
 
 예시:
 

@@ -145,9 +145,22 @@ for i in range(corr_window, len(data), step):
 - **방향 조정**: 음의 상관관계로 조정 (높은 스코어 = 높은 위험)
 
 #### 하이퍼파라미터 조정
-모델 학습에 사용되는 하이퍼파라미터는 `RiskScoreEngine.DEFAULT_PARAMS`
-에 정의되어 있습니다. `RISK_PARAMS` 환경변수에 JSON 형식으로 값을 지정하
-거나 클래스 초기화 시 파라미터 사전을 전달하여 쉽게 수정할 수 있습니다.
+모델 학습에 사용되는 하이퍼파라미터는 `RiskScoreEngine.DEFAULT_PARAMS`에 정의되어 있습니다. 기본값은 다음과 같습니다.
+
+```python
+{
+    "roll": 126,
+    "corr": 504,
+    "step": 3,
+    "model": "elastic",
+    "alpha": 1.0,
+    "future_days": 126,
+    "smooth": 20,
+}
+```
+
+환경변수 `RISK_PARAMS`에 JSON 형식으로 값을 지정하거나 클래스 초기화 시 파라미터 사전을 전달하여 쉽게 수정할 수 있습니다.
+
 
 ### 4. 리스크 스코어 계산
 
