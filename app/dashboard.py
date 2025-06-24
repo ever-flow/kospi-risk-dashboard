@@ -9,8 +9,8 @@ import plotly.graph_objects as go
 import plotly.express as px
 from plotly.subplots import make_subplots
 import datetime as dt
-from data_collector import DataCollector
-from risk_engine import RiskScoreEngine
+from app.data_collector import DataCollector
+from app.risk_engine import RiskScoreEngine
 
 # 페이지 설정
 st.set_page_config(

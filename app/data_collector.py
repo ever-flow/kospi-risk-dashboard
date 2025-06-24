@@ -9,6 +9,7 @@ import datetime as dt
 from pathlib import Path
 from typing import Dict, Any, Optional
 import logging
+import requests_cache
 
 import numpy as np
 import pandas as pd
@@ -49,6 +50,13 @@ class DataCollector:
         self.cache_dir = Path(cache_dir)
         self.cache_dir.mkdir(exist_ok=True)
         self.force_update = force_update
+
+        # 캐시 TTL 설정 (환경변수 사용)
+        self.cache_ttl = int(os.getenv("CACHE_TTL_HOURS", "1"))
+        requests_cache.install_cache(
+            str(self.cache_dir / "http_cache"), expire_after=self.cache_ttl * 3600
+        )
+        logger.info(f"HTTP 캐시 TTL: {self.cache_ttl}시간")
         
         # 현재 날짜 설정 (실시간)
         self.end_date = dt.date.today().strftime("%Y-%m-%d")
@@ -124,7 +132,7 @@ class DataCollector:
             
             return df.ffill()
         
-        df = self._get_cached_data("price_data", _download_prices, max_age_hours=1)
+        df = self._get_cached_data("price_data", _download_prices, max_age_hours=self.cache_ttl)
         
         # IEF 시작일 조정
         df.loc[df.index < pd.to_datetime(INCEPTION_DATES["IEF"]), "IEF"] = np.nan
@@ -157,7 +165,7 @@ class DataCollector:
                 logger.error(f"PER/PBR 데이터 수집 실패: {e}")
                 return pd.DataFrame()
         
-        return self._get_cached_data("per_pbr", _download_per_pbr, max_age_hours=1)
+        return self._get_cached_data("per_pbr", _download_per_pbr, max_age_hours=self.cache_ttl)
     
     def get_flow_data(self) -> pd.DataFrame:
         """실시간 자금 흐름 데이터 수집 (안정화 버전)"""
@@ -201,7 +209,7 @@ class DataCollector:
                 logger.error(f"자금흐름 데이터 수집 실패: {e}")
                 return pd.DataFrame()
         
-        return self._get_cached_data("flow", _download_flows, max_age_hours=1)
+        return self._get_cached_data("flow", _download_flows, max_age_hours=self.cache_ttl)
     
     def get_market_data(self) -> pd.DataFrame:
         """시장 데이터만 별도로 가져오기 (차트용)"""

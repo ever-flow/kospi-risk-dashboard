@@ -3,6 +3,8 @@
 """
 
 import math
+import os
+import json
 import warnings
 import numpy as np
 import pandas as pd
@@ -40,18 +42,34 @@ def rolling_zscore(s: pd.Series, window: int):
 
 class RiskScoreEngine:
     """코스피 리스크 스코어 계산 엔진"""
-    
-    def __init__(self):
-        # 최적 파라미터 (원본 코드 결과 기반)
-        self.best_params = {
-            "roll": 126,
-            "corr": 252, 
-            "step": 10,
-            "model": "ridge",
-            "alpha": 0.1,
-            "future_days": 126,
-            "smooth": 10
-        }
+
+    DEFAULT_PARAMS = {
+        "roll": 126,
+        "corr": 504,
+        "step": 3,
+        "model": "elastic",
+        "alpha": 1.0,
+        "future_days": 126,
+        "smooth": 20,
+    }
+
+    def __init__(self, params: dict | None = None):
+        """엔진 초기화 및 하이퍼파라미터 설정"""
+        best = self.DEFAULT_PARAMS.copy()
+
+        # 환경변수로 전달된 JSON 파라미터 처리
+        env_params = os.getenv("RISK_PARAMS")
+        if env_params:
+            try:
+                best.update(json.loads(env_params))
+            except Exception as e:
+                logger.warning(f"RISK_PARAMS 파싱 실패: {e}")
+
+        # 직접 전달된 파라미터가 있으면 적용
+        if params:
+            best.update(params)
+
+        self.best_params = best
         
     def calculate_indicators(self, kospi, prices, per_pbr, flows):
         """기술적 지표 계산 (원본 calc_risk 함수 기반)"""
@@ -243,7 +261,7 @@ class RiskScoreEngine:
 
 if __name__ == "__main__":
     # 테스트용 코드
-    from data_collector import DataCollector
+    from app.data_collector import DataCollector
     
     collector = DataCollector()
     data = collector.get_all_data()
